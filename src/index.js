@@ -1,35 +1,27 @@
 module.exports = function check(str, bracketsConfig) {
-    var stackOpenBrakets = [];
+    var objBracketsConfig = {};
+    var stackBrackets = [];
+    str = str.split("");
+    bracketsConfig.forEach(v => {
+        if (v[0] == v[1]) {
+            objBracketsConfig[v[0]] = v[0] + v[0];
+            let n = 0;
+            str = str.map((sv, i) => sv == v[0] && n++ % 2 != 0 ? v[0] + v[0] : sv);
+        } else {
+            objBracketsConfig[v[0]] = v[1];
+        }
+    });
 
-    for (let i = 0, flagBraket = true; i < str.length; i++) {
-        for (let j = 0; j < bracketsConfig.length; j++) {
-            if (bracketsConfig[j][0] === str[i] && bracketsConfig[j][0] === bracketsConfig[j][1]) {
-                if (flagBraket) {
-                    stackOpenBrakets.push(str[i]);
-                    flagBraket = false;
-                    break;
-                }
-                else {
-                    flagBraket = true;
-                    if (stackOpenBrakets.pop() !== bracketsConfig[j][0]) {
-                        return false;
-                    }
-                }
-            }
-            else if (bracketsConfig[j][0] === str[i]) {
-                stackOpenBrakets.push(str[i]);
-                break;
-            }
-            else if (bracketsConfig[j][1] === str[i]) {
-                if (stackOpenBrakets.pop() !== bracketsConfig[j][0]) {
-                    return false;
-                }
-            }
+    for (let i = 0; i < str.length; i++) {
+        if (str[i] in objBracketsConfig) {
+            stackBrackets.push(str[i]);
+        }
+        else if (objBracketsConfig[stackBrackets.pop()] != str[i]) {
+            return false;
         }
     }
-    if (stackOpenBrakets.length != 0) {
+    if (stackBrackets.length != 0) {
         return false;
     }
-
     return true;
 }
